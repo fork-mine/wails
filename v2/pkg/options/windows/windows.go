@@ -118,6 +118,9 @@ type Options struct {
 
 	// Configure whether swipe gestures should be enabled
 	EnableSwipeGestures bool
+
+	// 扩展浏览器参数
+	AdditionalBrowserArgs []string
 }
 
 func DefaultMessages() *Messages {

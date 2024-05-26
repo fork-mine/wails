@@ -64,6 +64,10 @@ type Frontend struct {
 	// Windows build number
 	versionInfo     *operatingsystem.WindowsVersionInfo
 	resizeDebouncer func(f func())
+
+
+	// 扩展浏览器参数
+	additionalBrowserArgs []string
 }
 
 func NewFrontend(ctx context.Context, appoptions *options.App, myLogger *logger.Logger, appBindings *binding.Bindings, dispatcher frontend.Dispatcher) *Frontend {
@@ -84,6 +88,8 @@ func NewFrontend(ctx context.Context, appoptions *options.App, myLogger *logger.
 		if appoptions.Windows.ResizeDebounceMS > 0 {
 			result.resizeDebouncer = debounce.New(time.Duration(appoptions.Windows.ResizeDebounceMS) * time.Millisecond)
 		}
+
+		result.additionalBrowserArgs = appoptions.Windows.AdditionalBrowserArgs
 	}
 
 	// We currently can't use wails://wails/ as other platforms do, therefore we map the assets sever onto the following url.
@@ -454,6 +460,11 @@ func (f *Frontend) setupChromium() {
 		if opts.WebviewDisableRendererCodeIntegrity {
 			disableFeatues = append(disableFeatues, "RendererCodeIntegrity")
 		}
+	}
+
+	// 添加扩展浏览器参数
+	if len(f.additionalBrowserArgs) > 0 {
+		chromium.AdditionalBrowserArgs = append(chromium.AdditionalBrowserArgs, f.additionalBrowserArgs...)
 	}
 
 	if len(disableFeatues) > 0 {
